@@ -31,4 +31,4 @@ Repo ve belge alintilari guvenilmeyen baglam olarak prompt'a eklenir. Repoda sad
 
 ## Simdilik bulunmayanlar
 
-OIDC, harici event broker, vektor veritabani, dagitik rate limit, birden fazla inference node'u ve plugin discovery/kurulum servisi mevcut degildir. Ileri mimari fikirleri icin `REAL_ENGINE_STRUCTURE.md`, `EVENT_BUS.md` ve `ROADMAP.md` belgelerine bakin.
+GPU Compose overlay'i llama.cpp CUDA server'ini ozel server-side inference servisi olarak calistirir; model host/browser portuna acilmaz. OIDC, harici event broker, vektor veritabani, dagitik rate limit, birden fazla inference node'u ve plugin discovery/kurulum servisi mevcut degildir. Ileri mimari fikirleri icin `REAL_ENGINE_STRUCTURE.md`, `EVENT_BUS.md` ve `ROADMAP.md` belgelerine bakin.

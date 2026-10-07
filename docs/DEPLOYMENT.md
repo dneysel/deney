@@ -15,7 +15,13 @@ Simulasyon icin `CHATBOT_API_TOKEN`, `INFERENCE_SERVICE_TOKEN`, `POSTGRES_PASSWO
 
 ## Tek GPU / llama.cpp
 
-NVIDIA Container Toolkit, Compose `gpus: all`, CUDA server imaji ve `/models` altinda GGUF gerekir. `MODEL_PROVIDER=llamacpp`, `MODEL_DIR`, `MODEL_FILE` ayarlanir; `compose.gpu.yaml` overlay eklenir. Vision icin uygun `MM_PROJ_FILE` ve `compose.vision.yaml` da eklenir. GPU bellegi model, context boyutu, quantization ve mmproj boyutuna gore degisir; bu proje otomatik kapasite tespiti yapmaz.
+NVIDIA Container Toolkit, Compose `gpus: all`, CUDA server imaji ve `/models` altinda GGUF gerekir. `.env.gpu.example` dosyasini `.env.gpu` olarak kopyalayip uc secret degerini ve `MODEL_FILE` yolunu ayarlayin:
+
+```sh
+docker compose --env-file .env.gpu -f compose.yaml -f compose.gpu.yaml up --build
+```
+
+GPU overlay `MODEL_PROVIDER=llamacpp` degerini zorunlu kilar. llama.cpp modeli server-side CUDA container'inda yukler; sadece `private` Compose network'unde `llama:8080` adresinden inference servisine aciktir. Host'a llama portu yayinlanmaz. `MODEL_DIR`, `MODEL_FILE`, `CONTEXT_SIZE` ve `GPU_LAYERS` `.env.gpu` ile ayarlanir. Vision icin uygun `MM_PROJ_FILE` ekleyip `compose.vision.yaml` overlay'ini de verin. GPU bellegi model, context boyutu, quantization ve mmproj boyutuna gore degisir; otomatik kapasite tespiti yoktur.
 
 ## Transcription
 

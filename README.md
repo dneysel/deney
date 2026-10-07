@@ -24,21 +24,17 @@ docker compose up --build
 
 Arayuz: http://localhost:8000
 
-Simule mod, GPU veya model dosyasi olmadan UI/API akisini denemek icindir. Gercek model icin NVIDIA Container Toolkit, tek GPU ve uyumlu bir GGUF dosyasi gerekir:
+Simule mod, GPU veya model dosyasi olmadan UI/API akisini denemek icindir. Gercek model icin NVIDIA Container Toolkit, tek GPU ve uyumlu bir GGUF dosyasi gerekir. Sunucu tarafindaki llama.cpp icin ayri `.env.gpu` ayar dosyasi hazirlayin:
 
 ```sh
-export CHATBOT_API_TOKEN="deneme-icin-uzun-bir-token"
-export INFERENCE_SERVICE_TOKEN="servisler-arasi-farkli-bir-token"
-export POSTGRES_PASSWORD="yerel-deneme-icin-farkli-bir-parola"
-export MODEL_PROVIDER=llamacpp
-export MODEL_DIR=./models
-export MODEL_FILE=model.gguf
-docker compose -f compose.yaml -f compose.gpu.yaml up --build
+cp .env.gpu.example .env.gpu
+# .env.gpu icindeki uc token/parola degerini duzenleyin ve MODEL_FILE'i ayarlayin.
+docker compose --env-file .env.gpu -f compose.yaml -f compose.gpu.yaml up --build
 ```
 
-Model dosyasini `MODEL_DIR` altina koyun. llama.cpp sadece Compose ic aginda dinler; host'a model portu acilmaz. GPU profili `ghcr.io/ggml-org/llama.cpp:server-cuda` imajini kullanir.
+GGUF dosyasini `MODEL_DIR` altina koyun. GPU overlay inference provider'ini zorunlu olarak `llamacpp` yapar; llama.cpp CUDA server modeli inference servisinin ozel Compose aginda sunar. llama.cpp portu host'a yayinlanmaz ve tarayicidan erisilemez. `CONTEXT_SIZE` ve `GPU_LAYERS` `.env.gpu` icinden ayarlanabilir. Model dosyasi, VRAM ve NVIDIA Container Toolkit gereklidir.
 
-Yerel kurulumda `MODEL_PROVIDER=llamacpp sh run.sh` kullanilabilir; bunun icin llama.cpp sunucusunu ayri olarak `LLAMACPP_URL` adresinde calistirin. GPU'lu llama.cpp icin onerilen yol Compose komutudur.
+`sh run.sh` yerel Python servislerini baslatir; `MODEL_PROVIDER=llamacpp` ile kullanildiginda llama.cpp sunucusu ayrica calisiyor olmalidir ve `LLAMACPP_URL` ayarlanmalidir. GPU ile butun sunucu tarafini birlikte baslatmak icin yukaridaki Compose akisini kullanin.
 
 ## Eklenen Ozellikler
 

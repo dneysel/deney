@@ -5,3 +5,4 @@ models/
 data/
 .gateway_token
 .env
+.env.gpu

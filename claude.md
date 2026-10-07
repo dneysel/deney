@@ -12,7 +12,7 @@ This repository is a local-first chat prototype. The current runtime is a Python
 
 ## Safety and security
 
-- Never read, print, commit, or copy values from `.env`, `.gateway_token`, databases, model files, or media uploads into docs/logs.
+- Never read, print, commit, or copy values from `.env`, `.env.gpu`, `.gateway_token`, databases, model files, or media uploads into docs/logs.
 - Keep inference and llama.cpp server-side and private; do not expose the inference port to the browser.
 - Do not add arbitrary shell execution, file-writing tools, plugin imports, or network fetching without an explicit threat model and sandbox.
 - Preserve owner scoping for conversations, documents, revisions, and attachments.

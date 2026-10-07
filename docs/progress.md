@@ -15,6 +15,7 @@ Tek-host deneme MVP'si uygulanmis durumda. Yerel varsayilan, `CHATBOT_API_TOKEN`
 - [x] Gorsel upload gate/vision profile; opsiyonel transcription URL.
 - [x] Rate limit, temel latency/queue metrikleri, Compose GPU ve vision overlays.
 - [x] Tokenless same-origin simulation session.
+- [x] llama.cpp CUDA server Compose overlay'i: inference provider'ini llamacpp'ye sabitler ve modeli ozel server-side agda tutar.
 
 ## Dogrulama
 
