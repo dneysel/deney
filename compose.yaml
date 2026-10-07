@@ -1,0 +1,70 @@
+services:
+  gateway:
+    build: .
+    command: ["uvicorn", "gateway.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      CHATBOT_API_TOKEN: ${CHATBOT_API_TOKEN:?Set CHATBOT_API_TOKEN}
+      CHATBOT_API_TOKENS: ${CHATBOT_API_TOKENS:-{}}
+      UI_AUTO_AUTH: ${UI_AUTO_AUTH:-false}
+      INFERENCE_SERVICE_TOKEN: ${INFERENCE_SERVICE_TOKEN:?Set INFERENCE_SERVICE_TOKEN}
+      INFERENCE_URL: http://inference:8001
+      MODEL_PROVIDER: ${MODEL_PROVIDER:-simulation}
+      MODEL_NAME: ${MODEL_NAME:-local-model}
+      AVAILABLE_MODELS: ${AVAILABLE_MODELS:-${MODEL_NAME:-local-model}}
+      DATABASE_URL: postgresql+psycopg://chatbot:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@database:5432/chatbot
+      REPO_ROOT: /workspace
+      MEDIA_DIR: /data/media
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-30}
+      VISION_ENABLED: ${VISION_ENABLED:-false}
+      TRANSCRIPTION_URL: ${TRANSCRIPTION_URL:-}
+    volumes:
+      - .:/workspace:ro
+      - chatbot-media:/data/media
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      inference:
+        condition: service_started
+      database:
+        condition: service_healthy
+    networks:
+      - private
+
+  inference:
+    build: .
+    command: ["uvicorn", "inference.main:app", "--host", "0.0.0.0", "--port", "8001"]
+    environment:
+      INFERENCE_SERVICE_TOKEN: ${INFERENCE_SERVICE_TOKEN:?Set INFERENCE_SERVICE_TOKEN}
+      MODEL_PROVIDER: ${MODEL_PROVIDER:-simulation}
+      LLAMACPP_URL: http://llama:8080
+      MODEL_NAME: ${MODEL_NAME:-local-model}
+      AVAILABLE_MODELS: ${AVAILABLE_MODELS:-${MODEL_NAME:-local-model}}
+      VISION_ENABLED: ${VISION_ENABLED:-false}
+      GPU_CONCURRENCY: ${GPU_CONCURRENCY:-1}
+      GPU_QUEUE_TIMEOUT_SECONDS: ${GPU_QUEUE_TIMEOUT_SECONDS:-120}
+    networks:
+      - private
+
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: chatbot
+      POSTGRES_USER: chatbot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - chatbot-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chatbot -d chatbot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - private
+
+networks:
+  private:
+    driver: bridge
+
+volumes:
+  chatbot-db:
+  chatbot-media:

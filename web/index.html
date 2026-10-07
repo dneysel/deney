@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f5f4">
+  <title>Yerel Sohbet</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <a class="brand" href="/" aria-label="Yerel Sohbet ana sayfa">
+          <span class="brand-mark" aria-hidden="true">Y</span>
+          <span>yerel<span class="brand-light">/sohbet</span></span>
+        </a>
+        <button class="icon-button sidebar-toggle" id="closeSidebar" aria-label="Kenar cubugunu kapat" title="Kenar cubugunu kapat">‹</button>
+      </div>
+      <button class="new-chat" id="newChat"><span aria-hidden="true">+</span> Yeni sohbet</button>
+      <input class="history-search" id="conversationSearch" type="search" placeholder="Sohbetlerde ara" aria-label="Sohbet geçmişinde ara">
+      <div class="history-label">SON SOHBETLER</div>
+      <nav class="history" id="history" aria-label="Sohbet gecmisi"></nav>
+      <div class="sidebar-bottom">
+        <div class="connection"><span class="status-dot"></span><span id="providerLabel">Simulasyon</span></div>
+        <button class="profile" id="tokenButton" title="Erisim tokenini degistir">
+          <span class="avatar">D</span><span class="profile-copy"><strong>Deneme alani</strong><small>Yerel sunucu</small></span><span class="more">···</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <button class="icon-button menu-button" id="openSidebar" aria-label="Kenar cubugunu ac" title="Sohbetler">☰</button>
+        <div class="model-controls"><span class="model-symbol">✳</span><select class="model-select" id="modelSelect" aria-label="Model"></select><span class="model-state">SIM</span></div>
+        <button class="icon-button settings-button" id="openSettings" aria-label="Model ayarları" title="Model ayarları">⚙</button>
+        <button class="icon-button top-token" id="topTokenButton" aria-label="Token ayarlari" title="Token ayarlari">⚙</button>
+      </header>
+
+      <section class="conversation" id="conversation" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <div class="welcome-kicker"><span class="welcome-line"></span> KENDI MAKINENDE, KENDI MODELIN</div>
+          <h1>Bugun ne<br><em>kesfedelim?</em></h1>
+          <p>Yerel asistanina bir sey sor veya birlikte kodla.</p>
+          <div class="suggestions">
+            <button class="suggestion" data-prompt="Bu projeyi anlamama yardim et"><span class="suggestion-icon mint">⌘</span><span><strong>Projeyi kesfet</strong><small>Bu projeyi anlamama yardim et</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion" data-prompt="Bir Python fonksiyonunu acikla"><span class="suggestion-icon coral">{ }</span><span><strong>Kod hakkinda sor</strong><small>Bir Python fonksiyonunu acikla</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion" data-prompt="Fikirlerimi duzenlememe yardim et"><span class="suggestion-icon yellow">✳</span><span><strong>Fikir gelistir</strong><small>Dusuncelerini birlikte netlestirelim</small></span><span class="suggestion-arrow">↗</span></button>
+          </div>
+        </div>
+        <div class="messages" id="messages"></div>
+      </section>
+
+      <div class="composer-wrap">
+        <form class="composer" id="chatForm">
+          <textarea id="prompt" rows="1" maxlength="12000" placeholder="Bir sey sor..." aria-label="Mesaj"></textarea>
+          <div class="attachment-preview" id="attachmentPreview" hidden></div>
+          <div class="composer-tools">
+            <div class="composer-left-tools">
+              <button class="composer-tool" id="attachImage" type="button" title="Görsel ekle" aria-label="Görsel ekle">＋ Görsel</button>
+              <button class="composer-tool" id="openDocuments" type="button" title="Belgeleri yönet">▤ Belgeler</button>
+              <label class="composer-toggle" title="Yanıtta belgeleri kullan"><input id="useDocuments" type="checkbox" checked> Belge</label>
+              <label class="composer-toggle" title="Salt okunur repo aramasını yanıta ekle"><input id="useRepository" type="checkbox"> Repo</label>
+              <button class="composer-tool voice-button" id="voiceButton" type="button" title="Yerel sesle yazdır" aria-label="Yerel sesle yazdır">●</button>
+              <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            </div>
+            <div class="composer-actions"><span class="composer-hint"><kbd>Enter</kbd> gönder</span><span class="char-count" id="charCount"></span><button class="send-button" id="sendButton" type="submit" aria-label="Mesaji gonder" title="Gonder">↑</button></div>
+          </div>
+        </form>
+        <p class="disclaimer">Simulasyon modu acik. Cevaplar test amaclidir.</p>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="tokenDialog" class="token-dialog">
+    <form method="dialog" id="tokenForm">
+      <button class="dialog-close" value="cancel" aria-label="Kapat">×</button>
+      <div class="dialog-mark">↗</div>
+      <h2>Yerel sunucuya baglan</h2>
+      <p>Gateway erisim tokenini gir. Token bu sekmenin oturumunda tutulur.</p>
+      <label for="tokenInput">Bearer token</label>
+      <input id="tokenInput" type="password" autocomplete="off" required>
+      <div class="dialog-actions"><button class="secondary-button" value="cancel">Vazgec</button><button class="primary-button" id="saveToken" value="default">Baglan</button></div>
+      <small id="tokenError" role="alert"></small>
+    </form>
+  </dialog>
+  <dialog id="settingsDialog" class="feature-dialog">
+    <div class="dialog-header"><div><span class="dialog-kicker">MODEL</span><h2>Yanıt ayarları</h2></div><button class="dialog-close" data-close="settingsDialog" aria-label="Kapat">×</button></div>
+    <label for="temperature">Sıcaklık <output id="temperatureValue">0.7</output></label>
+    <input id="temperature" type="range" min="0" max="2" step="0.1" value="0.7">
+    <label for="topP">Top P</label><input id="topP" type="range" min="0.1" max="1" step="0.05" value="0.95">
+    <label for="maxTokens">Maksimum yanıt tokenı</label><input id="maxTokens" type="number" min="16" max="8192" step="16" value="1024">
+    <p class="dialog-note">Seçenekler modelin desteklediği aralığa göre uygulanır.</p>
+    <button class="primary-button dialog-done" data-close="settingsDialog">Tamam</button>
+  </dialog>
+  <dialog id="documentsDialog" class="feature-dialog documents-dialog">
+    <div class="dialog-header"><div><span class="dialog-kicker">YEREL BİLGİ</span><h2>Belgeler</h2></div><button class="dialog-close" data-close="documentsDialog" aria-label="Kapat">×</button></div>
+    <p class="dialog-note">TXT, Markdown veya metin içeren PDF ekle. Belgeler yalnızca bu token sahibine görünür.</p>
+    <form id="documentForm" class="document-upload"><input id="documentFile" type="file" accept=".txt,.md,.pdf" required><button class="primary-button" type="submit">Yükle</button></form>
+    <div class="document-list" id="documentList"></div>
+  </dialog>
+  <dialog id="messageDialog" class="feature-dialog message-dialog">
+    <div class="dialog-header"><div><span class="dialog-kicker">MESAJI DÜZENLE</span><h2>Yeniden gönder</h2></div><button class="dialog-close" data-close="messageDialog" aria-label="Kapat">×</button></div>
+    <textarea id="editMessageInput" rows="6" maxlength="12000"></textarea>
+    <button class="primary-button dialog-done" id="saveMessageEdit">Kaydet ve yeniden üret</button>
+  </dialog>
+  <dialog id="diffDialog" class="feature-dialog diff-dialog">
+    <div class="dialog-header"><div><span class="dialog-kicker">YANIT GEÇMİŞİ</span><h2>Son değişiklikler</h2></div><button class="dialog-close" data-close="diffDialog" aria-label="Kapat">×</button></div>
+    <div id="diffContent" class="diff-content"></div>
+  </dialog>
+  <script src="/static/client.js?v=5" defer></script>
+</body>
+</html>

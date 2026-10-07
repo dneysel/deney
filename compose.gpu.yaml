@@ -1,0 +1,17 @@
+services:
+  inference:
+    depends_on:
+      - llama
+
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    command: ["--model", "/models/${MODEL_FILE:-model.gguf}", "--host", "0.0.0.0", "--port", "8080", "--ctx-size", "4096"]
+    volumes:
+      - ${MODEL_DIR:-./models}:/models:ro
+    gpus: all
+    networks:
+      - private
+
+networks:
+  private:
+    driver: bridge

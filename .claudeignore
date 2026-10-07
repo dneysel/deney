@@ -1,0 +1,16 @@
+.env
+.gateway_token
+.venv/
+__pycache__/
+*.py[cod]
+data/
+models/
+*.gguf
+*.gguf.*
+*.sqlite
+*.sqlite3
+*.db
+media/
+uploads/
+node_modules/
+.git/

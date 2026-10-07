@@ -1,0 +1,11 @@
+services:
+  gateway:
+    environment:
+      VISION_ENABLED: "true"
+
+  inference:
+    environment:
+      VISION_ENABLED: "true"
+
+  llama:
+    command: ["--model", "/models/${MODEL_FILE:-model.gguf}", "--mmproj", "/models/${MM_PROJ_FILE:?Set MM_PROJ_FILE}", "--host", "0.0.0.0", "--port", "8080", "--ctx-size", "4096"]
